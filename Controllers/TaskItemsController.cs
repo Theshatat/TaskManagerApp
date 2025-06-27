@@ -20,10 +20,28 @@ namespace TaskManagerApp.Controllers
         }
 
         // GET: TaskItems
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? categoryId)
         {
-            var applicationDbContext = _context.TaskItems.Include(t => t.User);
-            return View(await applicationDbContext.ToListAsync());
+            IQueryable<TaskItem> tasksQuery = _context.TaskItems.Include(t => t.User).Include(t => t.Category);
+            // Get all categories to populate the dropdown
+            var categories = await _context.Categories
+                .Where(c => c.Name != null) // filter to avoid null names
+                .ToListAsync();
+
+
+            // Apply filter if category is selected
+            if (categoryId.HasValue && categoryId.Value > 0)
+            {
+                tasksQuery = tasksQuery.Where(t => t.CategoryId == categoryId.Value);
+            }
+
+            // Create a view model or use ViewBag to pass categories
+            ViewBag.Categories = new SelectList(categories, "CategoryId", "Name", categoryId);
+            ViewBag.SelectedCategory = categoryId ?? 0;
+
+            var model = await tasksQuery.ToListAsync();
+
+            return View(model);
         }
 
         // GET: TaskItems/Details/5

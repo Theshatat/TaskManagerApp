@@ -7,8 +7,30 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Create New Task</a>
 </p>
+<div class="mb-3">
+    <label for="categoryFilter">Filter by Category:</label>
+    @{
+        var list = ViewBag.Categories as SelectList;
+    }
+
+    @if (list != null)
+    {
+        <select id="categoryFilter" class="form-select" onchange="window.location.href = '/TaskItems/Index?categoryId=' + this.value;">
+            <option value="">-- All Categories --</option>
+            @foreach (var item in list)
+            {
+                <option value="@item.Value">@item.Text</option>
+            }
+        </select>
+    }
+    else
+    {
+        <p class="text-danger">Categories could not be loaded.</p>
+    }
+
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -23,9 +45,6 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User)
             </th>
             <th></th>
         </tr>
@@ -44,9 +63,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.Id)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
