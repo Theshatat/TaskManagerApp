@@ -31,6 +31,28 @@
     }
 
 </div>
+<form asp-action="Index" method="get">
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label>Status</label>
+            @Html.DropDownList("status", (IEnumerable<SelectListItem>)ViewBag.StatusOptions, new { @class = "form-control" })
+        </div>
+        <div class="col-md-3">
+            <label>Keyword</label>
+            <input type="text" name="searchString" value="@ViewBag.CurrentSearch" class="form-control" placeholder="Search title/description" />
+        </div>
+        <div class="col-md-3">
+            <label>Due Between</label>
+            <div class="input-group">
+                <input type="date" name="dueDateStart" value="@ViewBag.CurrentStartDate" class="form-control" />
+                <span class="input-group-text">and</span>
+                <input type="date" name="dueDateEnd" value="@ViewBag.CurrentEndDate" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Apply Filters</button>
+    <a asp-action="Index" class="btn btn-secondary">Clear</a>
+</form>
 <table class="table">
     <thead>
         <tr>
