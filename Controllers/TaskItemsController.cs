@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +12,7 @@ using TaskManagerApp.Models;
 
 namespace TaskManagerApp.Controllers
 {
+    [Authorize]
     public class TaskItemsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -61,7 +64,7 @@ namespace TaskManagerApp.Controllers
                 tasksQuery= tasksQuery.Where(t => t.DueDate <= dueDateEnd.Value.Date.AddDays(1).AddSeconds(-1)); 
             }
             // Create a view model or use ViewBag to pass categories
-            ViewBag.Categories = new SelectList(categories, "CategoryId", "Name", categoryId);
+            ViewBag.Categories = new SelectList(categories, "Id", "Name", categoryId);
             ViewBag.SelectedCategory = categoryId ?? 0;
             ViewBag.StatusOptions = new SelectList(StatusOptions);
             ViewBag.CurrentStatus = status;
@@ -92,27 +95,55 @@ namespace TaskManagerApp.Controllers
             return View(taskItem);
         }
 
-        // GET: TaskItems/Create
+
         public IActionResult Create()
         {
+            // Always populate categories
+            var categories = _context.Categories.ToList();
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
+
+            if (!categories.Any())
+            {
+                // Optional: Show message if no categories exist
+                ViewBag.Message = "No categories found. Please create at least one category first.";
+                ViewBag.Categories = null;
+            }
+            else
+            {
+                ViewBag.Categories = new SelectList(categories, "Id", "Name");
+            }
+
             return View();
         }
+
 
         // POST: TaskItems/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,DueDate,Status,UserId")] TaskItem taskItem)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,DueDate,Status,CategoryId,UserId")] TaskItem taskItem)
         {
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                taskItem.UserId = userId;// Get the current user's ID from claims
+                                         // remove nav props from modelstate validation
+            ModelState.Remove("User");
+            ModelState.Remove("Category");
+            ModelState.Remove("UserId");
+
             if (ModelState.IsValid)
             {
-                _context.Add(taskItem);
+                _context.TaskItems.Add(taskItem);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", taskItem.UserId);
+            var categories = await _context.Categories
+               .Where(c => c.Name != null) // filter to avoid null names
+               .ToListAsync();
+
+            ViewBag.Categories = new SelectList(categories, "Id", "Name");
+
             return View(taskItem);
         }
 

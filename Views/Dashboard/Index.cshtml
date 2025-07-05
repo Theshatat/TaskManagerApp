@@ -1,0 +1,62 @@
+﻿@using TaskManagerApp.Data
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Your Dashboard</h1>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-header">
+                Total Tasks
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">You Have Total Tasks of :</h5>
+            </div>
+            <div class="card-footer text-body-secondary">
+                <p class="card-text">@Model?.TotalTasks</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-header">
+                Completed Tasks
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">You Have Completed Tasks of :</h5>
+            </div>
+            <div class="card-footer text-body-secondary">
+                <p class="card-text">@Model?.CompletedTasks</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-header">
+                Pending Tasks
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">You Have Pending Tasks of :</h5>
+            </div>
+            <div class="card-footer text-body-secondary">
+                <p class="card-text">@Model?.PendingTasks</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-header">
+                In Progress Tasks
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">You Have InProgress Tasks of :</h5>
+            </div>
+            <div class="card-footer text-body-secondary">
+                <p class="card-text">@Model?.InProgressTasks</p>
+            </div>
+        </div>
+    </div>
+</div>
