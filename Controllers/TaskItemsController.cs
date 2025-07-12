@@ -160,6 +160,11 @@ namespace TaskManagerApp.Controllers
             {
                 return NotFound();
             }
+            var categories = await _context.Categories
+               .Where(c => c.Name != null) // filter to avoid null names
+               .ToListAsync();
+
+            ViewBag.Categories = new SelectList(categories, "Id", "Name");
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", taskItem.UserId);
             return View(taskItem);
         }
@@ -169,7 +174,7 @@ namespace TaskManagerApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,DueDate,Status,UserId")] TaskItem taskItem)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,DueDate,Status,CategoryId,UserId")] TaskItem taskItem)
         {
             if (id != taskItem.Id)
             {
@@ -196,6 +201,11 @@ namespace TaskManagerApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            var categories = await _context.Categories
+               .Where(c => c.Name != null) // filter to avoid null names
+               .ToListAsync();
+
+            ViewBag.Categories = new SelectList(categories, "Id", "Name");
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", taskItem.UserId);
             return View(taskItem);
         }

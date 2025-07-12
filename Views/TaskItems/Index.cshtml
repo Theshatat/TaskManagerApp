@@ -4,33 +4,12 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>All Tasks</h1>
 
 <p>
     <a asp-action="Create">Create New Task</a>
 </p>
-<div class="mb-3">
-    <label for="categoryFilter">Filter by Category:</label>
-    @{
-        var list = ViewBag.Categories as SelectList;
-    }
 
-    @if (list != null)
-    {
-        <select id="categoryFilter" class="form-select" onchange="window.location.href = '/TaskItems/Index?categoryId=' + this.value;">
-            <option value="">-- All Categories --</option>
-            @foreach (var item in list)
-            {
-                <option value="@item.Value">@item.Text</option>
-            }
-        </select>
-    }
-    else
-    {
-        <p class="text-danger">Categories could not be loaded.</p>
-    }
-
-</div>
 <div class="card mb-4">
     <div class="card-header">
         <h5>Filter Tasks</h5>
@@ -45,6 +24,28 @@
                 <div class="col-md-3">
                     <label>Keyword</label>
                     <input type="text" name="searchString" value="@ViewBag.CurrentSearch" class="form-control" placeholder="Search title/description" />
+                </div>
+                <div class="mb-3">
+                    <label for="categoryFilter">Filter by Category:</label>
+                    @{
+                        var list = ViewBag.Categories as SelectList;
+                    }
+
+                    @if (list != null)
+                    {
+                        <select id="categoryFilter" name="categoryId" class="form-select">
+                            <option value="">-- All Categories --</option>
+                            @foreach (var item in list)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    }
+                    else
+                    {
+                        <p class="text-danger">Categories could not be loaded.</p>
+                    }
+
                 </div>
                 <div class="col-md-3">
                     <label>Due Between</label>
@@ -61,45 +62,72 @@
     </div>
 </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DueDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DueDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div id="task-container">
+    @Html.Partial("_TaskListPartial", Model)
+</div>
+
+                        @section Scripts {
+                            <script>
+                                function fetchFilteredTasks() {
+                                    var formData = $("form").serialize();
+                                    $.get("/TaskItems/Index", formData, function (data) {
+                                        var html = $(data).find("#task-container").html();
+                                        $("#task-container").html(html);
+                                    });
+                                }
+
+                                // Trigger AJAX when category or status dropdown changes
+                                $("#categoryFilter, select[name='status']").change(function () {
+                                    fetchFilteredTasks();
+                                });
+
+                                // Trigger on keyword typing or date changes
+                                $("input[name='searchString'], input[name='dueDateStart'], input[name='dueDateEnd']").on("input change", function () {
+                                    fetchFilteredTasks();
+                                });
+
+                                // Trigger on form submit (Apply Filters)
+                                $("form").on("submit", function (e) {
+                                    e.preventDefault();
+                                    fetchFilteredTasks();
+                                });
+                            </script>
+                        }
+
+@* 
+    // This script handles the AJAX request same as the previous one, but it is now in $.ajax format.
+<script>
+    function fetchFilteredTasks() {
+        var formData = $("form").serialize();
+
+        $.ajax({
+            url: "/TaskItems/Index",
+            type: "GET",
+            data: formData,
+            success: function (data) {
+                var html = $(data).find("#task-container").html();
+                $("#task-container").html(html);
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                alert("An error occurred while fetching tasks.");
+            }
+        });
+    }
+
+    // Trigger AJAX when category or status dropdown changes
+    $("#categoryFilter, select[name='status']").change(function () {
+        fetchFilteredTasks();
+    });
+
+    // Trigger on keyword typing or date changes
+    $("input[name='searchString'], input[name='dueDateStart'], input[name='dueDateEnd']").on("input change", function () {
+        fetchFilteredTasks();
+    });
+
+    // Trigger on form submit (Apply Filters)
+    $("form").on("submit", function (e) {
+        e.preventDefault();
+        fetchFilteredTasks();
+    });
+</script> *@
