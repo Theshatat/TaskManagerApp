@@ -26,12 +26,37 @@ namespace TaskManagerApp.Controllers
             var dashboardViewModel = new DashboardViewModel
             {
                 TotalTasks = allTasks.Count,
-                CompletedTasks = allTasks.Count(t => t.Status == "Completed"),
-                PendingTasks = allTasks.Count(t => t.Status == "Pending"),
-                InProgressTasks = allTasks.Count(t => t.Status == "In Progress")
+                //CompletedTasks = allTasks.Count(t => t.Status == "Completed"), this is case-sensitive
+                CompletedTasks = allTasks.Count(t =>
+                    string.Equals(t.Status, "Completed", StringComparison.OrdinalIgnoreCase)),
+                PendingTasks = allTasks.Count(t =>
+                    string.Equals(t.Status, "Pending", StringComparison.OrdinalIgnoreCase)),
+                InProgressTasks = allTasks.Count(t =>
+                    string.Equals(t.Status, "In Progress", StringComparison.OrdinalIgnoreCase))
             };
+            // Tasks by Category
+            var categoryGroups = allTasks
+                .GroupBy(t => t.Category?.Name ?? "Uncategorized")
+                .ToList();
 
-            return View();
+            foreach (var group in categoryGroups)
+            {
+                dashboardViewModel.Categories.Add(group.Key);
+                dashboardViewModel.TasksByCategory.Add(group.Count());
+            }
+
+            // Tasks by Status
+            var statusGroups = allTasks
+                .GroupBy(t => t.Status)
+                .ToList();
+
+            foreach (var group in statusGroups)
+            {
+                dashboardViewModel.Statuses.Add(group.Key);
+                dashboardViewModel.TasksByStatus.Add(group.Count());
+            }
+
+            return View(dashboardViewModel);
         }
     }
 }

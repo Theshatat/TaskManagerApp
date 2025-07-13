@@ -1,9 +1,15 @@
 ﻿@using TaskManagerApp.Data
+@using TaskManagerApp
+@using TaskManagerApp.Models
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers.ViewFeatures
 @model DashboardViewModel
 @{
     ViewData["Title"] = "Index";
 }
-
+@{
+    Layout = "_Layout";
+}
 <h1>Your Dashboard</h1>
 
 <div class="row">
@@ -60,3 +66,72 @@
         </div>
     </div>
 </div>
+<h3>Task Distribution</h3>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <canvas id="tasksByCategoryChart" width="400" height="200"></canvas>
+    </div>
+    <div class="col-md-6 mb-4">
+        <canvas id="tasksByStatusChart" width="400" height="200"></canvas>
+    </div>
+</div>
+
+            @section Scripts {
+    <script>
+        // Tasks by Category - Bar Chart
+        var ctx1 = document.getElementById('tasksByCategoryChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: [@Html.Raw(string.Join(",", Model.Categories.Select(c => $"'{c}'")))],
+                datasets: [{
+                    label: 'Tasks by Category',
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    data: [@string.Join(",", Model.TasksByCategory)]
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // Tasks by Status - Pie Chart
+        // Tasks by Status - Pie Chart
+var ctx2 = document.getElementById('tasksByStatusChart').getContext('2d');
+new Chart(ctx2, {
+    type: 'pie',
+    data: {
+        labels: [@Html.Raw(string.Join(",", Model.Statuses.Select(s => $"'{s}'")))],
+        datasets: [{
+            label: 'Tasks by Status',
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.6)',
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(75, 192, 192, 0.6)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(75, 192, 192, 1)'
+            ],
+            data: [@string.Join(",", Model.TasksByStatus)]
+        }]
+    },
+    options: {
+        responsive: true
+    }
+});
+    </script>
+
+}
