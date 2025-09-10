@@ -4,12 +4,10 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Edit Your Task</h1>
 
-<h4>TaskItem</h4>
-<hr />
-<div class="row">
-    <div class="col-md-6">
+<div class="d-flex justify-content-center align-items-center">
+    <div class=" card shadow p-4" style="width: 400px;" >
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
@@ -49,7 +47,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index"class="btn btn-success">Back to List</a>
 </div>
 
 @section Scripts {

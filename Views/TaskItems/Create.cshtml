@@ -4,32 +4,30 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1>@ViewData["Title"] New Task <i class="bi bi-check2-square"></i></h1>
 
-<h4>TaskItem</h4>
-<hr />
-<div class="row">
-    <div class="col-md-6">
+<div class="d-flex justify-content-center align-items-center">
+    <div class="card shadow p-4" style="width: 400px;" >
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group mb-3">
                 <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
+                <input asp-for="Name" class="form-control" placeholder="Enter Task Name" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
+                <input asp-for="Description" class="form-control" placeholder="Enter Task Description" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="DueDate" class="control-label"></label>
-                <input asp-for="DueDate" class="form-control" />
+                <label asp-for="DueDate" class="control-label">Due Date <i class="bi bi-calendar-event"></i></label>
+                <input asp-for="DueDate" class="form-control" type="date" />
                 <span asp-validation-for="DueDate" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
+                <label asp-for="Status" class="control-label">Status <i class="bi bi-hourglass-split text-secondary"></i></label>
+                <input asp-for="Status" class="form-control" placeholder="Enter Task Status" />
                 <span asp-validation-for="Status" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
@@ -64,7 +62,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class="btn btn-success">Back to List</a>
 </div>
 
 @section Scripts {

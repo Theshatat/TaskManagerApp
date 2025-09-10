@@ -5,12 +5,13 @@
     ViewData["Title"] = "Log in";
 }
 
-<h1>@ViewData["Title"]</h1>
 <div class="row d-flex align-items-center justify-content-center">
-    <div class="col-md-4">
+    <div class="card shadow p-4" style="width: 400px;">
         <section>
             <form id="account" method="post">
-                <h2>Use a local account to log in.</h2>
+                <h2 class="text-center mb-4">
+                    @ViewData["Title"]
+                </h2>
                 <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                 <div class="form-floating mb-3">
@@ -23,25 +24,26 @@
                     <label asp-for="Input.Password" class="form-label">Password</label>
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
-                <div class="checkbox mb-3">
+                <div class="checkbox mb-3 d-flex justify-content-between">
                     <label asp-for="Input.RememberMe" class="form-label">
                         <input class="form-check-input" asp-for="Input.RememberMe" />
                         @Html.DisplayNameFor(m => m.Input.RememberMe)
                     </label>
+                    <p>
+                        <a id="forgot-password" asp-page="./ForgotPassword" class="text-black text-decoration-none">Forgot your password?</a>
+                    </p>
                 </div>
-                <div>
+                <div class="mb-3">
                     <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
                 </div>
                 <div>
                     <p>
-                        <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
-                    </p>
-                    <p>
-                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
-                    </p>
-                    <p>
-                        <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
-                    </p>
+                        Don't Have an Account?
+                            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="text-black text-decoration-none"> Sign Up</a>
+                     </p>
+                    @* <p>
+                        <a id="resend-confirmation" asp-page="./ResendEmailConfirmation" class="btn btn-outline-danger">Resend email confirmation</a>
+                    </p> *@
                 </div>
             </form>
         </section>
